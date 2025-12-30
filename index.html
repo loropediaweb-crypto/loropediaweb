@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoroPedia | Centroamérica Pro</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --text: #0f172a;
+            --primary: #059669;
+            --accent: #ea580c;
+            --danger: #dc2626;
+            --border: #e2e8f0;
+            --nav-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #020617;
+            --bg-card: #0f172a;
+            --text: #f1f5f9;
+            --primary: #10b981;
+            --accent: #fbbf24;
+            --danger: #ef4444;
+            --border: #1e293b;
+            --nav-bg: #0f172a;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            position: sticky; top: 0; z-index: 1000; 
+            background: var(--nav-bg);
+            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .container { max-width: 1100px; margin: 20px auto; padding: 20px; }
+
+        h2 { 
+            border-left: 5px solid var(--accent); padding-left: 15px;
+            text-transform: uppercase; font-size: 0.9rem; margin: 30px 0 15px 0;
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--bg-card); 
+            border: 1px solid var(--border);
+            padding: 20px; border-radius: 12px;
+            border-top: 4px solid var(--primary);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-size: 0.7rem;
+            text-transform: uppercase; transition: 0.2s;
+            display: inline-block; text-align: center; color: white;
+            text-decoration: none;
+        }
+
+        .btn-calc { background: var(--accent); width: 100%; margin-top: 10px; }
+        .btn-whatsapp { background: #25d366; flex: 1.5; }
+        .btn-pdf { background: #475569; flex: 1; }
+
+        input, select { 
+            padding: 12px; width: 100%; border-radius: 8px; border: 1px solid var(--border);
+            background: var(--bg-body); color: var(--text); margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .res-box {
+            padding: 15px; background: rgba(16, 185, 129, 0.1); 
+            border-radius: 8px; margin-top: 10px; display: none;
+            border: 1px solid var(--primary); font-weight: bold;
+        }
+
+        .tag-ca {
+            font-size: 0.6rem; background: var(--primary); color: white;
+            padding: 2px 8px; border-radius: 10px; position: absolute; top: 15px; right: 15px;
+        }
+
+        footer { text-align: center; padding: 30px; opacity: 0.5; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1 style="font-size: 1.1rem; color: var(--primary); margin:0;">LOROPEDIA <span style="opacity:0.6;">CENTROAMÉRICA PRO</span></h1>
+    <button class="btn" style="background:var(--text); color:var(--bg-body); font-size:0.6rem; padding: 8px 15px;" onclick="toggleTheme()">CAMBIAR MODO</button>
+</nav>
+
+<div class="container">
+
+    <section>
+        <h2>Calculadora de Dieta (11% peso)</h2>
+        <div class="card">
+            <input type="number" id="pesoInput" placeholder="Peso del ave en gramos">
+            <button class="btn btn-calc" onclick="calcularDieta()">CALCULAR RACIÓN DIARIA</button>
+            <div id="resCalc" class="res-box"></div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Seguridad Alimentaria</h2>
+        <div class="card" style="border-top-color: var(--danger);">
+            <select id="foodSelect" onchange="verificarComida()">
+                <option value="">-- Analizar Alimento --</option>
+                <option value="tox|Aguacate|Persina: Causa fallo cardíaco mortal.">Aguacate</option>
+                <option value="tox|Chocolate|Teobromina: Altamente tóxico al corazón.">Chocolate</option>
+                <option value="tox|Café|Cafeína: Provoca arritmias y muerte súbita.">Café / Té</option>
+                <option value="ok|Papaya|Vitamina A: Excelente para el plumaje.">Papaya</option>
+            </select>
+            <div id="resFood" class="res-box"></div>
+            <button id="btnToxWS" class="btn btn-whatsapp" style="display:none; width:100%; margin-top:10px;" onclick="enviarAlerta()">ENVIAR ALERTA WHATSAPP</button>
+        </div>
+    </section>
+
+    <section>
+        <h2>Especies de Centroamérica</h2>
+        <div class="grid">
+            
+            <div class="card">
+                <span class="tag-ca">REGIONAL</span>
+                <h3>Loro Atolero</h3>
+                <p style="font-size:0.8rem; font-style:italic;">Eupsittula canicularis</p>
+                <p style="font-size:0.8rem;">También llamado Perico de Frente Anaranjada. Muy común en la vertiente del Pacífico.</p>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <button class="btn btn-pdf" onclick="descargarPDF('Loro Atolero', 'Pacífico C.A.')">PDF</button>
+                    <button class="btn btn-whatsapp" onclick="irAWhatsApp('Loro Atolero')">WHATSAPP</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="tag-ca">NI | CR | PA</span>
+                <h3>Lapa Verde</h3>
+                <p style="font-size:0.8rem; font-style:italic;">Ara ambiguus</p>
+                <p style="font-size:0.8rem;">Majestuosa y en peligro. Habita en selvas húmedas de la vertiente del Caribe.</p>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <button class="btn btn-pdf" onclick="descargarPDF('Lapa Verde', 'C.A. Sur')">PDF</button>
+                    <button class="btn btn-whatsapp" onclick="irAWhatsApp('Lapa Verde')">WHATSAPP</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="tag-ca">GT | HN | SV</span>
+                <h3>Loro Frentirrojo</h3>
+                <p style="font-size:0.8rem; font-style:italic;">Amazona autumnalis</p>
+                <p style="font-size:0.8rem;">Llamado "Cachete Amarillo". Muy adaptable y común en toda la región.</p>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <button class="btn btn-pdf" onclick="descargarPDF('Loro Frentirrojo', 'Norte C.A.')">PDF</button>
+                    <button class="btn btn-whatsapp" onclick="irAWhatsApp('Loro Frentirrojo')">WHATSAPP</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="tag-ca">REGIONAL</span>
+                <h3>Zapoyolito</h3>
+                <p style="font-size:0.8rem; font-style:italic;">Brotogeris jugularis</p>
+                <p style="font-size:0.8rem;">El periquito más pequeño y popular. Verde con manchas naranjas bajo el ala.</p>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <button class="btn btn-pdf" onclick="descargarPDF('Zapoyolito', 'Centroamérica')">PDF</button>
+                    <button class="btn btn-whatsapp" onclick="irAWhatsApp('Zapoyolito')">WHATSAPP</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="tag-ca">GT | BZ</span>
+                <h3>Loro Cabeza Amarilla</h3>
+                <p style="font-size:0.8rem; font-style:italic;">Amazona oratrix</p>
+                <p style="font-size:0.8rem;">Altamente inteligente y gran hablador. En peligro por el tráfico ilegal.</p>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <button class="btn btn-pdf" onclick="descargarPDF('Cabeza Amarilla', 'Norte C.A.')">PDF</button>
+                    <button class="btn btn-whatsapp" onclick="irAWhatsApp('Cabeza Amarilla')">WHATSAPP</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    LOROPEDIA 2025 | loropediaweb@gmail.com
+</footer>
+
+<script>
+    function toggleTheme() {
+        const d = document.documentElement;
+        d.setAttribute('data-theme', d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+
+    function calcularDieta() {
+        const p = document.getElementById('pesoInput').value;
+        const r = document.getElementById('resCalc');
+        if(p > 0) {
+            const total = (p * 0.11).toFixed(1);
+            r.style.display = 'block';
+            r.innerHTML = `DIETA RECOMENDADA: ${total}g <br><small style="font-weight:normal;">(70% Pienso | 30% Vegetales)</small>`;
+        }
+    }
+
+    let msgTox = "";
+    function verificarComida() {
+        const v = document.getElementById('foodSelect').value;
+        const r = document.getElementById('resFood');
+        const b = document.getElementById('btnToxWS');
+        if(v) {
+            const [tipo, nom, desc] = v.split('|');
+            r.style.display = 'block';
+            r.innerHTML = desc;
+            r.style.color = tipo === 'tox' ? 'var(--danger)' : 'var(--primary)';
+            b.style.display = tipo === 'tox' ? 'block' : 'none';
+            msgTox = `ALERTA LOROPEDIA: El alimento ${nom} es PELIGROSO. ${desc}`;
+        }
+    }
+
+    function enviarAlerta() {
+        const url = `https://wa.me/?text=${encodeURIComponent(msgTox)}`;
+        window.open(url, '_blank');
+    }
+
+    function irAWhatsApp(nombre) {
+        const msg = `LoroPedia: Consulta sobre la especie centroamericana ${nombre}.`;
+        const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+
+    function descargarPDF(n, reg) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(22);
+        doc.setTextColor(5, 150, 105);
+        doc.text("FICHA LOROPEDIA CENTROAMÉRICA", 20, 30);
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Especie: ${n}`, 20, 50);
+        doc.text(`Región: ${reg}`, 20, 60);
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 80);
+        doc.save(`LoroPedia_${n}.pdf`);
+    }
+</script>
+
+</body>
+</html>
